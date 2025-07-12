@@ -93,14 +93,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     print(f"[ERROR] Forwarding failed for user {uid}: {e}")
 
 async def main():
-    # Create APScheduler with pytz timezone to fix timezone errors
-    scheduler = AsyncIOScheduler(timezone=pytz.utc)
+    # Use pytz.UTC (uppercase) to avoid timezone errors
+    scheduler = AsyncIOScheduler(timezone=pytz.UTC)
 
     application = (
         ApplicationBuilder()
         .token(BOT_TOKEN)
         .scheduler(scheduler)                   # Pass the custom scheduler here
-        .defaults(Defaults(tzinfo=pytz.utc))  # Optional: ensure consistent timezone for messages
+        .defaults(Defaults(tzinfo=pytz.UTC))  # Optional: consistent timezone for messages
         .build()
     )
 
