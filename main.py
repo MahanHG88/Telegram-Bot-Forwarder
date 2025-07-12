@@ -1,7 +1,6 @@
 import os
 import json
 import asyncio
-import pytz  # Required for timezone fix
 
 from telegram import Update
 from telegram.ext import (
@@ -9,11 +8,8 @@ from telegram.ext import (
     CommandHandler,
     MessageHandler,
     ContextTypes,
-    Defaults,
     filters,
 )
-
-from apscheduler.schedulers.asyncio import AsyncIOScheduler  # Fix scheduler timezone
 
 DATA_FILE = "user_data.json"
 user_states = {}
@@ -48,7 +44,7 @@ async def add_destination(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.effective_user.id)
     user_states[user_id] = {"step": "waiting_destination"}
     await update.message.reply_text(
-        "✅ Now send any message in the *destination* group (where I am admin).",
+        "✅ Now send any message in the destination group (where I am admin).",
         parse_mode="Markdown"
     )
 
@@ -93,14 +89,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     print(f"[ERROR] Forwarding failed for user {uid}: {e}")
 
 async def main():
-    # Use pytz.UTC (uppercase) to avoid timezone errors
-    scheduler = AsyncIOScheduler(timezone=pytz.UTC)
-
     application = (
         ApplicationBuilder()
         .token(BOT_TOKEN)
-        .scheduler(scheduler)                   # Pass the custom scheduler here
-        .defaults(Defaults(tzinfo=pytz.UTC))  # Optional: consistent timezone for messages
         .build()
     )
 
