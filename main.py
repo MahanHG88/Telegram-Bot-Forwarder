@@ -1,12 +1,15 @@
 import os
 import json
 import asyncio
+import pytz  # ✅ Required for timezone fix
+
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
     ContextTypes,
+    Defaults,
     filters,
 )
 
@@ -88,7 +91,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     print(f"[ERROR] Forwarding failed for user {uid}: {e}")
 
 async def main():
-    application = ApplicationBuilder().token(BOT_TOKEN).build()
+    application = (
+        ApplicationBuilder()
+        .token(BOT_TOKEN)
+        .defaults(Defaults(tzinfo=pytz.utc))  # ✅ Fix for pytz timezone compatibility
+        .build()
+    )
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("addsource", add_source))
